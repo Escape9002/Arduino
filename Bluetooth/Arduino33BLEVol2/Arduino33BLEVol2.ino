@@ -1,5 +1,5 @@
 int PotiValue = 0;
-int LEDValue = 0;
+
 
 #include <ArduinoBLE.h>
 
@@ -98,10 +98,10 @@ void loop()
       Poti();
       if (PotiValue) {
         txChar.writeValue(PotiValue);
-        LEDValue = map(PotiValue,0,0,1025,255);
-        analogWrite(2,LEDValue);
+       
+        analogWrite(2,PotiValue);
       }
-      PotiValue = 0;
+      
 
     }
     disconnectedLight();
@@ -167,16 +167,3 @@ void disconnectedLight() {
 void Poti() {
   PotiValue = analogRead(A0);
 }
-
-
-/*
-    // Send the microphone values to the central device.
-      if (samplesRead) {
-        // print samples to the serial monitor or plotter
-        for (int i = 0; i < samplesRead; i++) {
-          txChar.writeValue(sampleBuffer[i]);
-        }
-        // Clear the read count
-        samplesRead = 0;
-      }
-*/
