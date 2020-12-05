@@ -1,6 +1,5 @@
-int i = 0;
-
-
+int PotiValue = 0;
+int LEDValue = 0;
 
 #include <ArduinoBLE.h>
 
@@ -28,7 +27,13 @@ short sampleBuffer[256];
 volatile int samplesRead;
 
 
-  void setup() {
+void setup() {
+
+  //declare poti port as input
+  pinMode(A0, INPUT);
+//LED Pin define
+pinMode(2,OUTPUT);
+
 
   // Start serial.
   Serial.begin(9600);
@@ -61,7 +66,7 @@ volatile int samplesRead;
   // Let's tell devices about us.
   BLE.advertise();
 
-    // Print out full UUID and MAC address.
+  // Print out full UUID and MAC address.
   Serial.println("Peripheral advertising info: ");
   Serial.print("Name: ");
   Serial.println(nameOfPeripheral);
@@ -73,7 +78,7 @@ volatile int samplesRead;
   Serial.println(uuidOfRxChar);
   Serial.print("txCharacteristics UUID: ");
   Serial.println(uuidOfTxChar);
-  
+
 
   Serial.println("Bluetooth device active, waiting for connections...");
 
@@ -83,21 +88,21 @@ volatile int samplesRead;
 void loop()
 {
   BLEDevice central = BLE.central();
-  
+
   if (central)
   {
     // Only send data if we are connected to a central device.
     while (central.connected()) {
       connectedLight();
-      // Send the microphone values to the central device.
-      if (samplesRead) {
-        // print samples to the serial monitor or plotter
-        for (int i = 0; i < samplesRead; i++) {
-          txChar.writeValue(sampleBuffer[i]);      
-        }
-        // Clear the read count
-        samplesRead = 0;
+
+      Poti();
+      if (PotiValue) {
+        txChar.writeValue(PotiValue);
+        LEDValue = map(PotiValue,0,0,1025,255);
+        analogWrite(2,LEDValue);
       }
+      PotiValue = 0;
+
     }
     disconnectedLight();
   } else {
@@ -106,8 +111,8 @@ void loop()
 }
 
 /*
- *  BLUETOOTH
- */
+    BLUETOOTH
+*/
 void startBLE() {
   if (!BLE.begin())
   {
@@ -121,7 +126,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   byte tmp[256];
   int dataLength = rxChar.readValue(tmp, 256);
 
-  for(int i = 0; i < dataLength; i++) {
+  for (int i = 0; i < dataLength; i++) {
     Serial.print((char)tmp[i]);
   }
   Serial.println();
@@ -142,8 +147,8 @@ void onBLEDisconnected(BLEDevice central) {
 }
 
 /*
- * LEDS
- */
+   LEDS
+*/
 void connectedLight() {
   digitalWrite(LEDR, LOW);
   digitalWrite(LEDG, HIGH);
@@ -155,5 +160,23 @@ void disconnectedLight() {
   digitalWrite(LEDG, LOW);
 }
 
+/*
+   Own Programms
+*/
 
-/* doess Github work? i dont know*/
+void Poti() {
+  PotiValue = analogRead(A0);
+}
+
+
+/*
+    // Send the microphone values to the central device.
+      if (samplesRead) {
+        // print samples to the serial monitor or plotter
+        for (int i = 0; i < samplesRead; i++) {
+          txChar.writeValue(sampleBuffer[i]);
+        }
+        // Clear the read count
+        samplesRead = 0;
+      }
+*/
