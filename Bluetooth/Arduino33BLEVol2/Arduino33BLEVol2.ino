@@ -18,7 +18,7 @@ bool RX_BUFFER_FIXED_LENGTH = false;
 
 // RX / TX Characteristics
 BLECharacteristic rxChar(uuidOfRxChar, BLEWriteWithoutResponse | BLEWrite, RX_BUFFER_SIZE, RX_BUFFER_FIXED_LENGTH);
-BLEByteCharacteristic txChar(uuidOfTxChar, BLERead | BLENotify /*| BLEBroadcast*/);
+BLEByteCharacteristic txChar(uuidOfTxChar, BLERead | BLENotify | BLEBroadcast);
 
 // Buffer to read samples into, each sample is 16-bits
 short sampleBuffer[256];
