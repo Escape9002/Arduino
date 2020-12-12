@@ -1,4 +1,4 @@
-int PotiValue = 0;
+int PotiValue = 187;
 
 
 #include <ArduinoBLE.h>
@@ -18,7 +18,7 @@ bool RX_BUFFER_FIXED_LENGTH = false;
 
 // RX / TX Characteristics
 BLECharacteristic rxChar(uuidOfRxChar, BLEWriteWithoutResponse | BLEWrite, RX_BUFFER_SIZE, RX_BUFFER_FIXED_LENGTH);
-BLEByteCharacteristic txChar(uuidOfTxChar, BLERead | BLENotify | BLEBroadcast);
+BLEByteCharacteristic txChar(uuidOfTxChar, BLERead | BLENotify /*| BLEBroadcast*/);
 
 // Buffer to read samples into, each sample is 16-bits
 short sampleBuffer[256];
@@ -31,8 +31,8 @@ void setup() {
 
   //declare poti port as input
   pinMode(A0, INPUT);
-//LED Pin define
-pinMode(2,OUTPUT);
+  //LED Pin define
+  pinMode(2, OUTPUT);
 
 
   // Start serial.
@@ -54,6 +54,8 @@ pinMode(2,OUTPUT);
   BLE.setAdvertisedService(TestService);
   TestService.addCharacteristic(rxChar);
   TestService.addCharacteristic(txChar);
+  txChar.writeValue(PotiValue);
+ 
   BLE.addService(TestService);
 
   // Bluetooth LE connection handlers.
@@ -99,9 +101,11 @@ void loop()
       if (PotiValue) {
         txChar.writeValue(PotiValue);
        
-        analogWrite(2,PotiValue);
+        Serial.print("Poti: ");
+        Serial.println(PotiValue);
+        analogWrite(2, PotiValue);
       }
-      
+
 
     }
     disconnectedLight();
