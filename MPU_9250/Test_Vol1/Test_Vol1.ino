@@ -58,6 +58,7 @@ void loop() {
   // read the sensor
   IMU.readSensor();
   // display the data
+  
   Serial.print("AccelX: ");
   Serial.print(IMU.getAccelX_mss(),6);
   Serial.print("  ");
@@ -66,7 +67,7 @@ void loop() {
   Serial.print("  ");
   Serial.print("AccelZ: ");  
   Serial.println(IMU.getAccelZ_mss(),6);
-  
+  /*
   Serial.print("GyroX: ");
   Serial.print(IMU.getGyroX_rads(),6);
   Serial.print("  ");
@@ -88,5 +89,6 @@ void loop() {
   Serial.print("Temperature in C: ");
   Serial.println(IMU.getTemperature_C(),6);
   Serial.println();
+  */
   delay(200);
 } 
