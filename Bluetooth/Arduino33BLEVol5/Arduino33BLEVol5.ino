@@ -28,7 +28,8 @@
    none
 
 compatible with BLETestVol4.apk
-
+int = Auf den Arduino Due- und SAMD-basierten Boards (wie MKR1000 und Zero) speichert ein int einen 32-Bit-Wert (4 Byte).
+BLE: A characteristic value can be up to 512 bytes long.
 */
 
 
@@ -43,7 +44,7 @@ int status;
 //-------------------------------------------------------------------------------------BIBLIOTHEK
 //-------------------------------------------------------------------------------------VARIABLEN
 //---------------------------------------------------Acclereator
-volatile int accelXInt = 1;
+volatile short accelXInt = 1;
 volatile int accelYInt = 1;
 volatile int accelZInt = 1;
 
@@ -78,7 +79,7 @@ byte accelZbyte = 1;
 //-------------------------------------------------------------------------------------VARIABLEN
 //-------------------------------------------------------------------------------------BLE_SETUP
 BLEService SendingService("c54beb4a-40c7-11eb-b378-0242ac130002");
-BLEByteCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify);
+BLEShortCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify);
 //BLEUnsignedIntCharacteristic accelYChar("2102", BLERead | BLENotify);
 //BLEUnsignedIntCharacteristic accelZChar("2103", BLERead | BLENotify);
 //-------------------------------------------------------------------------------------BLE_SETUP
@@ -120,7 +121,7 @@ void setup() {
 
   BLE.advertise();
 
-  accelXChar.writeValue(accelXbyte);
+  accelXChar.writeValue(accelXInt);
   // accelYChar.writeValue(accelYInt);
   // accelZChar.writeValue(accelZInt);
 
@@ -153,7 +154,7 @@ void loop() {
     while (central.connected()) {
       read_accel();
       debug_accel();
-      send_byte();
+      send_Int();
       isAdvertising();
 
 
@@ -166,6 +167,10 @@ void loop() {
 
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------PROGRAMMS
+//--------------------------------------------------- Send Int
+void send_Int(){
+  accelXChar.writeValue(accelXInt);
+}
 //--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
 /*
   void send_String() {
