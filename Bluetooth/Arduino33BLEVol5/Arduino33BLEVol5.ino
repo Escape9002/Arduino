@@ -2,7 +2,11 @@
    Written: Antonio Rehwinkel [2020]
    Usage: Programm for JuFo Project
         [Movement tracker for archers]
-
+        
+   Used Devices:
+    -Arduino Nano 33 BLE
+    -MPU9250
+    
    Device Name: MPU9250
 
    Service Uuid: c54beb4a-40c7-11eb-b378-0242ac130002
