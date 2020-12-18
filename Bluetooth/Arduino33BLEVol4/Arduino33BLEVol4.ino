@@ -27,7 +27,9 @@ current Errors:
       "nRF Connect" shows Service and characteristic. Also data is captured.
       Own app doesn't show any Data + says that it's not advertising.
 
-sending works with bytes
+
+
+
 */
 
 
