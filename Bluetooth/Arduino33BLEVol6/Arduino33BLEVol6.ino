@@ -2,19 +2,19 @@
    Written: Antonio Rehwinkel [2020]
    Usage: Programm for JuFo Project
         [Movement tracker for archers]
-
+        
    Used Devices:
     -Arduino Nano 33 BLE
     -MPU9250
-
+    
    Device Name: MPU9250
 
    Service Uuid: c54beb4a-40c7-11eb-b378-0242ac130002
 
    charactersitics Uuid [Int]:
             accelX : d6b78de4-40c7-11eb-b378-0242ac130002
-            accelY : 383e9b64-42c8-11eb-b378-0242ac130002
-            accelZ : 47f065f6-42c8-11eb-b378-0242ac130002
+            accelY : 2102
+            accelZ : 2103
 
    charactersitics Uuid [String]:
             accelX : -
@@ -31,14 +31,14 @@
   current Errors:
    none
 
-  compatible with BLETestVol5.apk
-  Datenübertragung:
-  int = Auf den Arduino Due- und SAMD-basierten Boards (wie MKR1000 und Zero) speichert ein int einen 32-Bit-Wert (4 Byte).
-  BLE: A characteristic value can be up to 512 bytes long.
+compatible with BLETestVol5.apk
+Datenübertragung: 
+int = Auf den Arduino Due- und SAMD-basierten Boards (wie MKR1000 und Zero) speichert ein int einen 32-Bit-Wert (4 Byte).
+BLE: A characteristic value can be up to 512 bytes long.
 */
 
 
-//-------------------------------------------------------------------------------------BIBLIOTHEK {
+//-------------------------------------------------------------------------------------BIBLIOTHEK
 //---------------------------------------------------BLE
 #include <ArduinoBLE.h>
 //---------------------------------------------------MPU9250
@@ -46,79 +46,48 @@
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire, 0x68);
 int status;
-//-------------------------------------------------------------------------------------BIBLIOTHEK }
-//-------------------------------------------------------------------------------------VARIABLEN {
+//-------------------------------------------------------------------------------------BIBLIOTHEK
+//-------------------------------------------------------------------------------------VARIABLEN
 //---------------------------------------------------Acclereator
-/*
-  volatile int accelXInt = 1;
-  volatile int accelYInt = 1;
-  volatile int accelZInt = 1;
-*/
-volatile short accelXshort = 1;
-volatile short accelYshort = 1;
-volatile short accelZshort = 1;
-/*
-  String accelXStr = " ";
-  String accelYStr = " ";
-  String accelZStr = " ";
+volatile short accelXInt = 1;
+volatile int accelYInt = 1;
+volatile int accelZInt = 1;
 
-  volatile byte accelXbyte = 1;
-  volatile byte accelYbyte = 1;
-  volatile byte accelZbyte = 1;
-*/
+String accelXStr = " ";
+String accelYStr = " ";
+String accelZStr = " ";
+
+byte accelXbyte = 1;
+byte accelYbyte = 1;
+byte accelZbyte = 1;
+/*
   //---------------------------------------------------Gyroscope
-  /*
   volatile int gyroXInt = 1;
   volatile int gyroYInt = 1;
   volatile int gyroZInt = 1;
 
-  volatile short gyroXshort = 1;
-  volatile short gyroYshort = 1;
-  volatile short gyroZshort = 1;
-
   String gyroXStr = " ";
   String gyroYStr = " ";
   String gyroZStr = " ";
-
-  volatile byte gyroXbyte = 1;
-  volatile byte gyroYbyte = 1;
-  volatile byte gyroZbyte = 1;
-  */
   //---------------------------------------------------magnetic sensor
-  /*
   volatile int magnetXInt = 1;
   volatile int magnetYInt = 1;
   volatile int magnetZInt = 1;
 
-  volatile short magnetXshort = 1;
-  volatile short magnetYshort = 1;
-  volatile short magnetZshort = 1;
-
   String magnetXStr = " ";
   String magnetYStr = " ";
   String magnetZStr = " ";
-
-  volatile byte magnetXbyte = 1;
-  volatile byte magnetYbyte = 1;
-  volatile byte magnetZbyte = 1;
-  */
   //---------------------------------------------------Temperatur
-  /*
   volatile int tempInt = 1;
-
-  volatile short tempshort = 1;
-
   String tempStr = " ";
-
-  volatile byte tempbyte = 1;
 */
-//-------------------------------------------------------------------------------------VARIABLEN }
-//-------------------------------------------------------------------------------------BLE_SETUP {
+//-------------------------------------------------------------------------------------VARIABLEN
+//-------------------------------------------------------------------------------------BLE_SETUP
 BLEService SendingService("c54beb4a-40c7-11eb-b378-0242ac130002");
 BLEShortCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify);
-//BLEShortCharacteristic accelYChar("383e9b64-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
-//BLEShortCharacteristic accelZChar("47f065f6-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
-//-------------------------------------------------------------------------------------BLE_SETUP }
+//BLEUnsignedIntCharacteristic accelYChar("2102", BLERead | BLENotify);
+//BLEUnsignedIntCharacteristic accelZChar("2103", BLERead | BLENotify);
+//-------------------------------------------------------------------------------------BLE_SETUP
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------SETUP()
 void setup() {
@@ -143,16 +112,24 @@ void setup() {
     while (1);
   }
 
+
   BLE.setLocalName("MPU9250");
   BLE.setAdvertisedService(SendingService);
 
+  //BLE.setAdvertisedServiceUuid("c54beb4a-40c7-11eb-b378-0242ac130002");
+
   SendingService.addCharacteristic(accelXChar);
-  //SendingService.addCharacteristic(accelYChar);
-  //SendingService.addCharacteristic(accelZChar);
+  // SendingService.addCharacteristic(accelYChar);
+  // SendingService.addCharacteristic(accelZChar);
 
   BLE.addService(SendingService);
 
   BLE.advertise();
+
+  accelXChar.writeValue(accelXInt);
+  // accelYChar.writeValue(accelYInt);
+  // accelZChar.writeValue(accelZInt);
+
 
   String address = BLE.address();
   Serial.print("Local address is: ");
@@ -182,7 +159,10 @@ void loop() {
     while (central.connected()) {
       read_accel();
       debug_accel();
-      send_short();
+      send_Int();
+      isAdvertising();
+
+
     }
   }
   disconnectedLight();
@@ -191,142 +171,67 @@ void loop() {
 }
 
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------PROGRAMMS
-//----------------------------------------------------------------------------------------- SENDING
-//--------------------------------------------------- Send short
-void send_short() {
-  //-----------------------------------accel
-  accelXChar.writeValue(accelXshort);
-  //accelYChar.writeValue(accelYshort);
-  //accelZChar.writeValue(accelZshort);
-  //-----------------------------------gyro
-
-  //-----------------------------------magnet
-
-  //-----------------------------------temp
-
+//------------------------------------------------------------------------------------------------PROGRAMMS
+//--------------------------------------------------- Send Int
+void send_Int(){
+  accelXChar.writeValue(accelXInt);
 }
-
-  //--------------------------------------------------- Send Bytes
-  /*
-   void send_byte() {
-  //------------------------------------accel
-  accelXChar.writeValue(accelXbyte);
-  accelYChar.writeValue(accelYbyte);
-  accelZChar.writeValue(accelZbyte);
-
-  //-----------------------------------gyro
-
-  //-----------------------------------magnet
-
-  //-----------------------------------temp
-  }
-*/
-  //--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
-  /*
+//--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
+/*
   void send_String() {
-  //---------------------------- convert to String
   accelXStr = String(accelXInt);
-  accelYStr = String(accelYInt);
-  accelZStr = String(accelZInt);
+  // accelYStr = String(accelYInt);
+  //accelZStr = String(accelZInt);
 
-  //-----------------------------------accel
   accelXChar.writeValue(accelXStr);
-  accelYChar.writeValue(accelYStr);
-  accelZChar.writeValue(accelZStr);
-
-  //-----------------------------------gyro
-
-  //-----------------------------------magnet
-
-  //-----------------------------------temp
+  // accelYChar.writeValue(accelYStr);
+  // accelZChar.writeValue(accelZStr);
 
   }
 */
-//----------------------------------------------------------------------------------------- READING
+//--------------------------------------------------- Send Bytes
+void send_byte() {
+  accelXChar.writeValue(accelXbyte);
+  //accelYChar.writeValue(accelYbyte);
+  //accelZChar.writeValue(accelZbyte);
+}
 //--------------------------------------------------- Accelerator READ
 void read_accel() {
   IMU.readSensor();
-  /*
-    //--------------------------------byte
-    accelXbyte = IMU.getAccelX_mss();
-    accelYbyte = IMU.getAccelY_mss();
-    accelZbyte = IMU.getAccelZ_mss();
-  */
-  /*
-    //--------------------------------String (is converted in send_string() )
-    accelXInt = IMU.getAccelX_mss();
-    accelYInt = IMU.getAccelY_mss();
-    accelZInt = IMU.getAccelZ_mss();
-  */
-  //--------------------------------short
-  accelXshort = IMU.getAccelX_mss();
-  accelYshort = IMU.getAccelY_mss();
-  accelZshort = IMU.getAccelZ_mss();
-
+  accelXInt = IMU.getAccelX_mss();
+  accelYInt = IMU.getAccelY_mss();
+  accelZInt = IMU.getAccelZ_mss();
+  
+  accelXbyte = IMU.getAccelX_mss();
+  accelYbyte = IMU.getAccelY_mss();
+  accelZbyte = IMU.getAccelZ_mss();
+  
 }
-
-//--------------------------------------------------- Gyroscope READ
 /*
+  //--------------------------------------------------- Gyroscope READ
   void read_gyro() {
-  IMU.readSensor();
 
-  //--------------------------------byte
-  gyroXbyte = IMU.getGyroX_rads();
-  gyroYbyte = IMU.getGyroY_rads();
-  gyroZbyte = IMU.getGyroZ_rads();
-
-
-  //--------------------------------String (is converted in send_string() )
   gyroXInt = IMU.getGyroX_rads();
   gyroYInt = IMU.getGyroY_rads();
   gyroZInt = IMU.getGyroZ_rads();
 
-  //--------------------------------short
-  gyroXshort = IMU.getGyroX_rads();
-  gyroYshort = IMU.getGyroY_rads();
-  gyroZshort = IMU.getGyroZ_rads();
-
   }
-*/
-//--------------------------------------------------- Magentic READ
-/*
+
+  //--------------------------------------------------- Magentic READ
   void read_magnetic() {
-  IMU.readSensor();
 
-  //--------------------------------byte
-  magnetXbyte = IMU.getMagX_uT();
-  magnetYbyte = IMU.getMagY_uT();
-  magnetZbyte = IMU.getMagZ_uT();
-
-
-  //--------------------------------String (is converted in send_string() )
   magnetXInt = IMU.getMagX_uT();
   magnetYInt = IMU.getMagY_uT();
   magnetZInt = IMU.getMagZ_uT();
 
-  //--------------------------------short
-  magnetXshort = IMU.getMagX_uT();
-  magnetYshort = IMU.getMagY_uT();
-  magnetZshort = IMU.getMagZ_uT();
-
   }
-*/
-//--------------------------------------------------- Temperatur READ
-/*
+  //--------------------------------------------------- Temperatur READ
   void read_tempInt() {
-  IMU.readSensor();
 
-  //--------------------------------byte
-  tempbyte = IMU.getTemperature_C();
-  //--------------------------------String (is converted in send_string() )
   tempInt = IMU.getTemperature_C();
-  //--------------------------------short
-  tempshort = IMU.getTemperature_C();
 
   }
 */
-//----------------------------------------------------------------------------------------- LED-CONNECTION-INDICATOR
 //--------------------------------------------------- LED ( Connection status)
 void connectedLight() {
   digitalWrite(LEDR, LOW);
@@ -336,7 +241,7 @@ void disconnectedLight() {
   digitalWrite(LEDR, HIGH);
   digitalWrite(LEDG, LOW);
 }
-//----------------------------------------------------------------------------------------- DEBUGGING
+//------------------------------------------------------------------------------------------------------ Debugging
 //--------------------------------------------------- accelerator
 void debug_accel() {
 
@@ -348,6 +253,16 @@ void debug_accel() {
   Serial.print("  ");
   Serial.print("AccelZ: ");
   Serial.println(IMU.getAccelZ_mss(), 6);
+  /*
+    Serial.print("AccelX: ");
+    Serial.print(accelXInt);
+    Serial.print("  ");
+    Serial.print("AccelY: ");
+    Serial.print(accelYInt);
+    Serial.print("  ");
+    Serial.print("AccelZ: ");
+    Serial.println(accelZInt);
+  */
 }
 /*
   //--------------------------------------------------- gyroscope
@@ -373,8 +288,7 @@ void debug_accel() {
   Serial.print("MagZ: ");
   Serial.println(IMU.getMagZ_uT(), 6);
   }
-  //--------------------------------------------------- temperatur sensor
-  void debug_temp() {
+  void debug_temp(){
   Serial.print("Temperature in C: ");
   Serial.println(IMU.getTemperature_C(), 6);
   Serial.println();
