@@ -116,8 +116,8 @@ volatile short accelZshort = 1;
 //-------------------------------------------------------------------------------------BLE_SETUP {
 BLEService SendingService("c54beb4a-40c7-11eb-b378-0242ac130002");
 BLEShortCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify);
-//BLEShortCharacteristic accelYChar("383e9b64-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
-//BLEShortCharacteristic accelZChar("47f065f6-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
+BLEShortCharacteristic accelYChar("383e9b64-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
+BLEShortCharacteristic accelZChar("47f065f6-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
 //-------------------------------------------------------------------------------------BLE_SETUP }
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------SETUP()
@@ -147,8 +147,8 @@ void setup() {
   BLE.setAdvertisedService(SendingService);
 
   SendingService.addCharacteristic(accelXChar);
-  //SendingService.addCharacteristic(accelYChar);
-  //SendingService.addCharacteristic(accelZChar);
+  SendingService.addCharacteristic(accelYChar);
+  SendingService.addCharacteristic(accelZChar);
 
   BLE.addService(SendingService);
 
@@ -197,8 +197,8 @@ void loop() {
 void send_short() {
   //-----------------------------------accel
   accelXChar.writeValue(accelXshort);
-  //accelYChar.writeValue(accelYshort);
-  //accelZChar.writeValue(accelZshort);
+  accelYChar.writeValue(accelYshort);
+  accelZChar.writeValue(accelZshort);
   //-----------------------------------gyro
 
   //-----------------------------------magnet
