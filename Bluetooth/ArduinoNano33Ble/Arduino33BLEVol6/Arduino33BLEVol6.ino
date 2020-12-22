@@ -70,7 +70,7 @@ float ac_x, ac_y, ac_z;
   String gyroYStr = " ";
   String gyroZStr = " ";
 */
-float gy_x, gy_y, gy_z;
+//float gy_x, gy_y, gy_z;
 
 //---------------------------------------------------magnetic sensor
 /*
@@ -82,7 +82,7 @@ float gy_x, gy_y, gy_z;
   String magnetYStr = " ";
   String magnetZStr = " ";
 */
-float ma_x, ma_y, ma_z;
+//float ma_x, ma_y, ma_z;
 
 //---------------------------------------------------Temperatur
 /*
@@ -91,13 +91,14 @@ float ma_x, ma_y, ma_z;
 */
 //---------------------------------------------------Place for all data
 String Level_String;
+#define fixed_length 100
 //-------------------------------------------------- Timer
 long newTime = 0;
 long oldTime = 0;
 //-------------------------------------------------------------------------------------VARIABLEN
 //-------------------------------------------------------------------------------------BLE_SETUP
 BLEService SendingService("c54beb4a-40c7-11eb-b378-0242ac130002");
-BLEStringCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify, 40);
+BLEStringCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify, fixed_length);
 //-------------------------------------------------------------------------------------BLE_SETUP
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------SETUP()
@@ -137,16 +138,6 @@ void setup() {
 
   BLE.advertise();
 
-  //accelXChar.writeValue(accelXInt);
-  // accelYChar.writeValue(accelYInt);
-  // accelZChar.writeValue(accelZInt);
-
-
-  String address = BLE.address();
-  Serial.print("Local address is: ");
-  Serial.println(address);
-  delay(1000);
-
   Serial.println("Bluetooth device is now active, waiting for connections...");
 
 
@@ -159,12 +150,7 @@ void setup() {
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------LOOP()
 void loop() {
-
-  read_accel();
-  read_gyro();
-  read_magnetic();
-  debug_Level_String();
-
+  
   BLEDevice central = BLE.central();
 
   if (central) {
@@ -174,9 +160,7 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
 
     while (central.connected()) {
-      read_accel();
-      read_gyro();
-      read_magnetic();
+      getallData();
       send_String();
       debug_Level_String();
 
@@ -184,8 +168,8 @@ void loop() {
     }
   }
   disconnectedLight();
-  //Serial.print("Disconnected from central: ");
-  //Serial.println(central.address());
+  Serial.print("Disconnected from central: ");
+  Serial.println(central.address());
 }
 
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
@@ -198,10 +182,8 @@ void loop() {
 //--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
 
 void send_String() {
-  Level_String = "ST"+String(ac_x)+"/"+String(ac_y)+"/"+String(ac_z)+"/"+String(gy_x)+"/"+String(gy_y)+"/"+String(gy_z)+"/"+String(ma_x)+"/"+String(ma_y)+"/"+String(ma_z);
-
+  Level_String = String(ac_x) + "/" + String(ac_y) + "/" + String(ac_z)/* + "/" + String(gy_x) + "/" + String(gy_y) + "/" + String(gy_z) + "/" + String(ma_x) + "/" + String(ma_y) + "/" + String(ma_z)*/;
   accelXChar.writeValue(Level_String);
-
 }
 
 //--------------------------------------------------- Send Bytes
@@ -213,9 +195,10 @@ void send_String() {
   }
 */
 //--------------------------------------------------- Accelerator READ
+/*
 void read_accel() {
   IMU.readSensor();
-  /*
+  
     accelXInt = IMU.getAccelX_mss();
     accelYInt = IMU.getAccelY_mss();
     accelZInt = IMU.getAccelZ_mss();
@@ -223,38 +206,41 @@ void read_accel() {
     accelXbyte = IMU.getAccelX_mss();
     accelYbyte = IMU.getAccelY_mss();
     accelZbyte = IMU.getAccelZ_mss();
-  */
+  
   ac_x = IMU.getAccelX_mss();
   ac_y = IMU.getAccelY_mss();
   ac_z = IMU.getAccelZ_mss();
 }
-
+*/
 //--------------------------------------------------- Gyroscope READ
+/*
 void read_gyro() {
   IMU.readSensor();
-  /*
+  
     gyroXInt = IMU.getGyroX_rads();
     gyroYInt = IMU.getGyroY_rads();
     gyroZInt = IMU.getGyroZ_rads();
-  */
+  
   gy_x = IMU.getGyroX_rads();
   gy_y = IMU.getGyroY_rads();
   gy_z = IMU.getGyroZ_rads();
 }
-
+*/
 //--------------------------------------------------- Magentic READ
+/*
 void read_magnetic() {
   IMU.readSensor();
-  /*
+  
     magnetXInt = IMU.getMagX_uT();
     magnetYInt = IMU.getMagY_uT();
     magnetZInt = IMU.getMagZ_uT();
-  */
+  
   ma_x = IMU.getMagX_uT();
   ma_y = IMU.getMagY_uT();
   ma_z = IMU.getMagZ_uT();
 
 }
+*/
 //--------------------------------------------------- Temperatur READ
 /*
   void read_tempInt() {
@@ -264,6 +250,23 @@ void read_magnetic() {
 
   }
 */
+//--------------------------------------------------- get all data except temperatur
+void getallData() {
+  IMU.readSensor();
+
+  ac_x = IMU.getAccelX_mss();
+  ac_y = IMU.getAccelY_mss();
+  ac_z = IMU.getAccelZ_mss();
+/*
+  gy_x = IMU.getGyroX_rads();
+  gy_y = IMU.getGyroY_rads();
+  gy_z = IMU.getGyroZ_rads();
+
+  ma_x = IMU.getMagX_uT();
+  ma_y = IMU.getMagY_uT();
+  ma_z = IMU.getMagZ_uT();
+  */
+}
 //--------------------------------------------------- LED ( Connection status)
 void connectedLight() {
   digitalWrite(LEDR, LOW);
@@ -341,7 +344,9 @@ void transRate() {
 */
 //-------------------------------------------------- Level_String
 void debug_Level_String() {
-  Serial.print("ich lauf");
-  Serial.println(Level_String);
-  
+  //Serial.println(Level_String);
+  Serial.print("sizeof: ");
+  Serial.println(sizeof(Level_String));
+  Serial.print("VALUELENGTH: ");
+  Serial.println(accelXChar.valueLength());
 }

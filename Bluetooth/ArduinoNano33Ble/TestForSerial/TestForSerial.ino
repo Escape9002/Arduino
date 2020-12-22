@@ -23,14 +23,16 @@ void setup() {
     Serial.print("Status: ");
     Serial.println(status);
     while (1) {}
-  }   
+  }
 }
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------LOOP()
 void loop() {
 
   getallData();
-  updategyroLevel();
+ 
+    updategyroLevel();
+  sendData();
 }
 
 void getallData() {
@@ -50,9 +52,14 @@ void getallData() {
 }
 
 void updategyroLevel() {
- //Arduino Nano 33 BLE crashs at this point 
-    Level_String = String(ac_x)+"/"+String(ac_y)+"/"+String(ac_z)+"/"+String(gy_x)+"/"+String(gy_y)+"/"+String(gy_z)+"/"+String(ma_x)+"/"+String(ma_y)+"/"+String(ma_z);
-  
- 
+  //Arduino Nano 33 BLE crashs at this point
+  Level_String = String(ac_x) + "/" + String(ac_y) + "/" + String(ac_z) + "/" + String(gy_x) + "/" + String(gy_y) + "/" + String(gy_z) + "/" + String(ma_x) + "/" + String(ma_y) + "/" + String(ma_z);
+}
+
+void sendData() {
   Serial.println(Level_String);
+}
+
+void getSize(){
+  Serial.println(Level_String.length());
 }
