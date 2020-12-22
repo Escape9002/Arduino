@@ -112,12 +112,15 @@ volatile short accelZshort = 1;
 
   volatile byte tempbyte = 1;
 */
+//--------------------------------------------------- TImer
+long newTime = 1;
+long oldTime = 1;
 //-------------------------------------------------------------------------------------VARIABLEN }
 //-------------------------------------------------------------------------------------BLE_SETUP {
 BLEService SendingService("c54beb4a-40c7-11eb-b378-0242ac130002");
 BLEShortCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERead | BLENotify);
-BLEShortCharacteristic accelYChar("383e9b64-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
-BLEShortCharacteristic accelZChar("47f065f6-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
+//BLEShortCharacteristic accelYChar("383e9b64-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
+//BLEShortCharacteristic accelZChar("47f065f6-42c8-11eb-b378-0242ac130002", BLERead | BLENotify);
 //-------------------------------------------------------------------------------------BLE_SETUP }
 //-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------SETUP()
@@ -147,8 +150,8 @@ void setup() {
   BLE.setAdvertisedService(SendingService);
 
   SendingService.addCharacteristic(accelXChar);
-  SendingService.addCharacteristic(accelYChar);
-  SendingService.addCharacteristic(accelZChar);
+  //SendingService.addCharacteristic(accelYChar);
+  //SendingService.addCharacteristic(accelZChar);
 
   BLE.addService(SendingService);
 
@@ -180,9 +183,10 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
 
     while (central.connected()) {
-      read_accel();
-      debug_accel();
+     read_accel();
+      //debug_accel();
       send_short();
+      transRate();
     }
   }
   disconnectedLight();
@@ -197,8 +201,8 @@ void loop() {
 void send_short() {
   //-----------------------------------accel
   accelXChar.writeValue(accelXshort);
-  accelYChar.writeValue(accelYshort);
-  accelZChar.writeValue(accelZshort);
+  //accelYChar.writeValue(accelYshort);
+  //accelZChar.writeValue(accelZshort);
   //-----------------------------------gyro
 
   //-----------------------------------magnet
@@ -335,6 +339,12 @@ void connectedLight() {
 void disconnectedLight() {
   digitalWrite(LEDR, HIGH);
   digitalWrite(LEDG, LOW);
+}
+//--------------------------------------------------- Transmitting Rate
+void transRate(){
+  newTime = millis();
+  Serial.println(newTime - oldTime);
+  oldTime = newTime;
 }
 //----------------------------------------------------------------------------------------- DEBUGGING
 //--------------------------------------------------- accelerator
