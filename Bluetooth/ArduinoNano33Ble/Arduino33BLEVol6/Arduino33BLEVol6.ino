@@ -70,7 +70,7 @@ float ac_x, ac_y, ac_z;
   String gyroYStr = " ";
   String gyroZStr = " ";
 */
-float gy_x, gy_y, gy_z;
+//float gy_x, gy_y, gy_z;
 
 //---------------------------------------------------magnetic sensor
 /*
@@ -82,7 +82,7 @@ float gy_x, gy_y, gy_z;
   String magnetYStr = " ";
   String magnetZStr = " ";
 */
-float ma_x, ma_y, ma_z;
+//float ma_x, ma_y, ma_z;
 
 //---------------------------------------------------Temperatur
 /*
@@ -91,7 +91,7 @@ float ma_x, ma_y, ma_z;
 */
 //---------------------------------------------------Place for all data
 String Level_String;
-int fixed_length = 72;
+int fixed_length = 100;
 //-------------------------------------------------- Timer
 long newTime = 0;
 long oldTime = 0;
@@ -104,7 +104,7 @@ BLEStringCharacteristic accelXChar("d6b78de4-40c7-11eb-b378-0242ac130002", BLERe
 //-------------------------------------------------------------------------------------SETUP()
 void setup() {
   Serial.begin(115200);
-  while (!Serial)
+  //while (!Serial)
     //---------------------------------------------------MPU9250 Setup
 
     status = IMU.begin();
@@ -162,7 +162,7 @@ void loop() {
     while (central.connected()) {
       getallData();
       send_String();
-      debug_Level_String();
+      transRate();
 
 
     }
@@ -182,9 +182,8 @@ void loop() {
 //--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
 
 void send_String() {
-  Level_String = String(ac_x,2) + "/" + String(ac_y,2) + "/" + String(ac_z,2) + "/" + String(gy_x,2) + "/" + String(gy_y,2) + "/" + String(gy_z,2) + "/" + String(ma_x,2) + "/" + String(ma_y,2) + "/" + String(ma_z,2);
+  Level_String = "S/" + String(ac_x) + "/" + String(ac_y) + "/" + String(ac_z)/* + "/" + String(gy_x,2) + "/" + String(gy_y,2) + "/" + String(gy_z,2) + "/" + String(ma_x,2) + "/" + String(ma_y,2) + "/" + String(ma_z,2)*/+ "/E";
   accelXChar.writeValue(Level_String);
-  delay(10);
 }
 
 //--------------------------------------------------- Send Bytes
@@ -212,7 +211,7 @@ void getallData() {
   ac_x = IMU.getAccelX_mss();
   ac_y = IMU.getAccelY_mss();
   ac_z = IMU.getAccelZ_mss();
-
+/*
   gy_x = IMU.getGyroX_rads();
   gy_y = IMU.getGyroY_rads();
   gy_z = IMU.getGyroZ_rads();
@@ -220,7 +219,7 @@ void getallData() {
   ma_x = IMU.getMagX_uT();
   ma_y = IMU.getMagY_uT();
   ma_z = IMU.getMagZ_uT();
-  
+  */
 }
 //--------------------------------------------------- LED ( Connection status)
 void connectedLight() {
@@ -298,12 +297,14 @@ void transRate() {
   }
 */
 //-------------------------------------------------- Level_String
+/*
 void debug_Level_String() {
   Serial.println(Level_String);
-  /*
+  
   Serial.print("sizeof: ");
   Serial.println(sizeof(Level_String));
   Serial.print("VALUELENGTH: ");
   Serial.println(accelXChar.valueLength());
-  */
-}
+ 
+} 
+*/
