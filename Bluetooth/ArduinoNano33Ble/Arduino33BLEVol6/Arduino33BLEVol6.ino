@@ -182,7 +182,7 @@ void loop() {
 //--------------------------------------------------- Send String (in ASCII)        !!!Charactersitics needs to be declared as String!!!
 
 void send_String() {
-  Level_String = "S/" + String(ac_x) + "/" + String(ac_y) + "/" + String(ac_z)/* + "/" + String(gy_x,2) + "/" + String(gy_y,2) + "/" + String(gy_z,2) + "/" + String(ma_x,2) + "/" + String(ma_y,2) + "/" + String(ma_z,2)*/+ "/E";
+  Level_String = "S/" + String(ac_x,2) + "/" + String(ac_y,2) + "/" + String(ac_z,2)/* + "/" + String(gy_x,2) + "/" + String(gy_y,2) + "/" + String(gy_z,2) + "/" + String(ma_x,2) + "/" + String(ma_y,2) + "/" + String(ma_z,2)*/+ "/E";
   accelXChar.writeValue(Level_String);
 }
 
